@@ -3,7 +3,8 @@ public class Fanta extends Bebida {
         super(serie);
     }
 
-    public String beber() {
+    @Override
+    public String consumir() {
         return "fanta";
     }
 }
