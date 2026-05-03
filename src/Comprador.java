@@ -1,22 +1,28 @@
 public class Comprador {
+
     private String sonido;
     private int vuelto;
 
-    public Comprador(Moneda m, int cualBebida, Expendedor exp) {
+    public Comprador(Moneda m, Catalogo tipo, Expendedor exp) {
         this.vuelto = 0;
 
-        Bebida b = exp.comprarBebida(m, cualBebida);
+        //primero intentamos comprar
+        try {
+            Producto p = exp.comprarProducto(m, tipo);
+            this.sonido = p.consumir();
 
-        if (b != null) {
-            this.sonido = b.beber();
-        } else {
-            this.sonido = null;
-        }
+        //si nos aparece un error, lo imprimimos
+        } catch (PagoIncorrectoException | PagoInsuficienteException | NoHayProductoException e) {
+            System.out.println(e.getMessage());
+            this.sonido = null; // No hay producto que consumir
 
-        Moneda monedaVuelto = exp.getVuelto();
-        while (monedaVuelto != null) {
-            this.vuelto += monedaVuelto.getValor();
-            monedaVuelto = exp.getVuelto();
+        //independiente si falló o no, se nos devuelve el vuelto moneda por moneda
+        } finally {
+            Moneda monedaVuelto = exp.getVuelto();
+            while (monedaVuelto != null) {
+                this.vuelto += monedaVuelto.getValor();
+                monedaVuelto = exp.getVuelto();
+            }
         }
     }
 
@@ -24,7 +30,7 @@ public class Comprador {
         return vuelto;
     }
 
-    public String queBebiste() {
+    public String queConsumiste() {
         return sonido;
     }
 }
